@@ -1,0 +1,8 @@
+{
+  "domain": "terneoax",
+  "name": "TerneoAX",
+  "documentation": "https://www.home-assistant.io/integrations/terneoax",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": []
+}
