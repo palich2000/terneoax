@@ -14,7 +14,7 @@ terneo_params_map = {
     1: ("endAwayTime", 6),  # в секундах от 01.01.2000, время конца отъезда
     2: ("mode", 2),  # режим работы: расписание=0, ручной=1
     3: ("controlType", 2),  # режим контроля: по полу=0, по воздуху=1, расширенный=2
-    4: ("manualAir", 1), # в °C, уставка ручного режима по воздуху
+    4: ("manualAir", 1),  # в °C, уставка ручного режима по воздуху
     5: ("manualFloorTemperature", 1),  # в °C, уставка ручного режима по полу
     6: ("awayAirTemperature", 1),  # в °C, уставка режима отъезда по воздуху
     7: ("awayFloorTemperature", 1),  # в °C, уставка режима отъезда по полу
@@ -179,12 +179,12 @@ class TerneoAX:
         try:
             if data is not None:
                 req = requests.post(uri,
-                                    timeout=(self.timeout / 2, self.timeout),
+                                    timeout=(int(self.timeout / 2), self.timeout),
                                     data=json.dumps(data)
                                     )
             else:
                 req = requests.get(uri,
-                                   timeout=(self.timeout / 2, self.timeout),
+                                   timeout=(int(self.timeout / 2), self.timeout),
                                    )
         except Exception as ex:
             self.log.error(
@@ -283,7 +283,8 @@ class TerneoAX:
             self.log.error("Json error: {err}".format(err=str(ex)))
             return False
         self._sn = data.get("sn", None)
-        self._telemetry = {}
+        if self._telemetry is None:
+            self._telemetry = {}
         for k, v in data.items():
             key = terneo_telemetry_map.get(k, None)
             if key is not None:
@@ -306,8 +307,13 @@ class TerneoAX:
         if self._params is not None:
             param: TerneoParam = self._params.get(attr, None)
             if param is not None:
-                # self.log.info("get param {} {} {}".format(self.addr, attr, param.setValue))
+                if param.setValue is None:
+                    self.log.warning("{} Param {} is None".format(self.addr, attr))
                 return param.setValue
+            else:
+                self.log.error("{} Param {} not found".format(self.addr, attr))
+        else:
+            self.log.error("{} Params is None".format(self.addr))
 
     def set_param(self, attr, value) -> bool:
         # self.log.info("set param {} {} {}".format(self.addr, attr, value))
@@ -323,7 +329,12 @@ class TerneoAX:
 
     def get_telemetry(self, attr):
         if self._telemetry is not None:
-            return self._telemetry.get(attr, None)
+            tele = self._telemetry.get(attr, None)
+            if tele is None:
+                self.log.warning("{} Telemetry {} is None".format(self.addr, attr))
+            return tele
+        else:
+            self.log.error("{} Telemetry is None".format(self.addr))
 
     def get_current_temp(self):
         return self.get_telemetry('floorSensor')

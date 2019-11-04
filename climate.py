@@ -8,9 +8,6 @@ from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
-    ATTR_TARGET_TEMP_HIGH,
-    ATTR_TARGET_TEMP_LOW,
-    HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
     CURRENT_HVAC_HEAT,
@@ -20,7 +17,6 @@ from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE,
     PRESET_AWAY,
     PRESET_HOME,
-    SUPPORT_TARGET_TEMPERATURE_RANGE,
 )
 from homeassistant.const import (
     CONF_NAME,
@@ -28,7 +24,6 @@ from homeassistant.const import (
     CONF_HOST,
     CONF_TIMEOUT,
     PRECISION_TENTHS,
-    STATE_ON,
     TEMP_CELSIUS,
 )
 import homeassistant.helpers.config_validation as cv
@@ -77,7 +72,7 @@ class TerneoAXThermostat(ClimateDevice):
         _LOGGER.info("Update: {}".format(self._client.addr))
         if not self._client.update_params():
             _LOGGER.error("Failed to update params")
-        if  not self._client.update_telemetry():
+        if not self._client.update_telemetry():
             _LOGGER.error("Failed to update telemetry")
         else:
             if not self._notification_send and not self._client.is_local_lan_remote_control_enabled():
@@ -90,7 +85,6 @@ class TerneoAXThermostat(ClimateDevice):
                 )
                 self._notification_send = True
         _LOGGER.info("Update: {} done".format(self._client.addr))
-
 
     @property
     def supported_features(self):
@@ -229,11 +223,10 @@ class TerneoAXThermostat(ClimateDevice):
         if preset_mode == PRESET_AWAY:
             success = self._client.set_away(3600 * 24)  # set away mode time from now (seconds)
         elif preset_mode == PRESET_HOME:
-            success = self._client.set_home() # set home mode
+            success = self._client.set_home()  # set home mode
         else:
             _LOGGER.error("Unknown hold mode: %s", preset_mode)
             success = False
 
         if not success:
             _LOGGER.error("Failed to change the home/away state {}".format(preset_mode))
-
