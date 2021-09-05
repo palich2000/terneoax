@@ -1,4 +1,5 @@
 {
+  "version": "1.0.1",
   "domain": "terneoax",
   "name": "TerneoAX",
   "documentation": "https://www.home-assistant.io/integrations/terneoax",

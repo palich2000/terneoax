@@ -5,7 +5,8 @@ from .terneo_api import TerneoAX
 import voluptuous as vol
 from homeassistant.helpers.typing import HomeAssistantType
 
-from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
+from homeassistant.components.climate import ClimateEntity, PLATFORM_SCHEMA
+
 from homeassistant.components.climate.const import (
     ATTR_HVAC_MODE,
     HVAC_MODE_HEAT,
@@ -58,7 +59,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     add_entities([TerneoAXThermostat(client, hass)], True)
 
 
-class TerneoAXThermostat(ClimateDevice):
+class TerneoAXThermostat(ClimateEntity):
     """Representation of a TerneoAX thermostat."""
 
     def __init__(self, client: TerneoAX, hass: HomeAssistantType):

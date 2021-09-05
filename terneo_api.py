@@ -3,7 +3,7 @@ import requests
 import urllib3
 import logging
 from collections import namedtuple
-from time import time
+from time import (time, sleep)
 import datetime
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -270,6 +270,7 @@ class TerneoAX:
                     self._params[key] = TerneoParam(param_value, param_value, param_type, 0)
 
         self.last_update_params = time()
+        sleep(1)
         return True
 
     def update_telemetry(self):
@@ -395,7 +396,9 @@ class TerneoAX:
         return self.get_current_state()
 
     def get_current_state(self):
-        # IDLE HEATING UNKNOWN
+        # OFF IDLE HEATING UNKNOWN
+        if self.get_param('powerOff') == 1:
+            return self.MODE_OFF
         cond = self.get_telemetry('loadCondition')
         if cond == 0:
             return self.STATE_IDLE
