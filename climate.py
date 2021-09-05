@@ -221,7 +221,7 @@ class TerneoAXThermostat(ClimateDevice):
         """Set the hold mode."""
         _LOGGER.info("Set home/away: {}".format(preset_mode))
         if preset_mode == PRESET_AWAY:
-            success = self._client.set_away(3600 * 24)  # set away mode time from now (seconds)
+            success = self._client.set_away(3600 * 24 * 30)  # set away mode time from now (seconds) //30 days from now
         elif preset_mode == PRESET_HOME:
             success = self._client.set_home()  # set home mode
         else:
